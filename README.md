@@ -7,6 +7,7 @@
 
 *   SQL Server -> MySQL 的一致性检查（CHECK）
 *   MySQL -> SQL Server 的回滚（SYNC）
+*   因为Ali RDS for SqlServer 2008的限制，去除对SQL Server CDC机制的依赖，通过一套简单的机制实现增量跟踪
 
 ## 获得 yugong jar 包
 
