@@ -140,6 +140,7 @@ public class YuGongInstance extends AbstractYuGongLifeCycle {
     this.tableShitKey = context.getTableMeta().getFullName();
   }
 
+  @Override
   public void start() {
     MDC.put(YuGongConstants.MDC_TABLE_SHIT_KEY, tableShitKey);
     super.start();
@@ -162,7 +163,8 @@ public class YuGongInstance extends AbstractYuGongLifeCycle {
       defaultTranslators.add(new OracleIncreamentDataTranslator());
       if (targetDbType.isOracle()) {
         defaultTranslators.add(new EncodeDataTranslator(context.getSourceEncoding(),
-            context.getTargetEncoding())); // oracle源库已经正确将编码转为'UTF-8'了
+                // oracle源库已经正确将编码转为'UTF-8'了
+                context.getTargetEncoding()));
       }
 
       if (!positioner.isStart()) {
@@ -181,6 +183,7 @@ public class YuGongInstance extends AbstractYuGongLifeCycle {
       }
 
       worker = new Thread(new Runnable() {
+        @Override
         public void run() {
           try {
             if (context.getRunMode() != RunMode.INC) {
@@ -379,9 +382,9 @@ public class YuGongInstance extends AbstractYuGongLifeCycle {
       worker.setName(this.getClass().getSimpleName() + "-" + context.getTableMeta().getFullName());
       worker.start();
 
-      logger.info("table[{}] start successful. extractor:{} , applier:{}, translator:{}", new Object[]{
-          context.getTableMeta().getFullName(), extractor.getClass().getName(), applier.getClass().getName(),
-          translators != null ? translators: "NULL"});
+      logger.info("table[{}] start successful. extractor:{} , applier:{}, translator:{}",
+              context.getTableMeta().getFullName(), extractor.getClass().getName(), applier.getClass().getName(),
+              translators != null ? translators: "NULL");
     } catch (InterruptedException e) {
       progressTracer.update(context.getTableMeta().getFullName(), ProgressStatus.FAILED);
       exception = new YuGongException(e);
@@ -410,6 +413,7 @@ public class YuGongInstance extends AbstractYuGongLifeCycle {
     }
   }
 
+  @Override
   public void stop() {
     MDC.put(YuGongConstants.MDC_TABLE_SHIT_KEY, tableShitKey);
     super.stop();

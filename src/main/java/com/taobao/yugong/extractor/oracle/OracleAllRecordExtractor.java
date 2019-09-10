@@ -31,6 +31,7 @@ public class OracleAllRecordExtractor extends AbstractOracleRecordExtractor {
 
   }
 
+  @Override
   public void start() {
     super.start();
     currentPostion = (IdPosition) context.getLastPosition();
@@ -60,6 +61,7 @@ public class OracleAllRecordExtractor extends AbstractOracleRecordExtractor {
     }
   }
 
+  @Override
   public void stop() {
     super.stop();
     if (incExtractor.isStart()) {
@@ -75,6 +77,7 @@ public class OracleAllRecordExtractor extends AbstractOracleRecordExtractor {
     }
   }
 
+  @Override
   public List<Record> extract() throws YuGongException {
     List<Record> result = null;
     if (fullExtractor.isStart()) {
@@ -111,6 +114,7 @@ public class OracleAllRecordExtractor extends AbstractOracleRecordExtractor {
     return result;
   }
 
+  @Override
   public Position ack(List<Record> records) throws YuGongException {
     if (incExtractor.isStart()) {
       return incExtractor.ack(records);
@@ -121,6 +125,7 @@ public class OracleAllRecordExtractor extends AbstractOracleRecordExtractor {
     }
   }
 
+  @Override
   public ExtractStatus status() {
     if (incExtractor.isStart()) {
       return incExtractor.status();

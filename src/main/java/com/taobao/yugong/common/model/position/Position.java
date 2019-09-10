@@ -16,10 +16,12 @@ public abstract class Position implements Serializable {
 
   private static final long serialVersionUID = 2332798099928474975L;
 
+  @Override
   public String toString() {
     return ToStringBuilder.reflectionToString(this, YuGongToStringStyle.DEFAULT_STYLE);
   }
 
+  @Override
   public Position clone() {
     return null;
   }

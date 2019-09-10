@@ -113,6 +113,7 @@ public abstract class AbstractFullRecordExtractor extends AbstractRecordExtracto
   /**
    * extract n record from queue data, n is {@link YuGongContext#getOnceCrawNum()}
    */
+  @Override
   public List<Record> extract() throws YuGongException {
     List<Record> records = Lists.newArrayListWithCapacity(context.getOnceCrawNum());
     for (int i = 0; i < context.getOnceCrawNum(); i++) {

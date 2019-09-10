@@ -60,6 +60,7 @@ public class MultiThreadIncrementRecordApplier extends IncrementRecordApplier {
     this.executor = executor;
   }
 
+  @Override
   public void start() {
     super.start();
 
@@ -75,12 +76,14 @@ public class MultiThreadIncrementRecordApplier extends IncrementRecordApplier {
     }
   }
 
+  @Override
   public void stop() {
     super.stop();
 
     executor.shutdownNow();
   }
 
+  @Override
   public void apply(List records) throws YuGongException {
     // no one,just return
     if (YuGongUtils.isEmpty(records)) {
@@ -92,6 +95,7 @@ public class MultiThreadIncrementRecordApplier extends IncrementRecordApplier {
     doApply(mergeRecords);
   }
 
+  @Override
   protected void doApply(List records) {
     JdbcTemplate jdbcTemplate = new JdbcTemplate(context.getTargetDs());
 
@@ -117,6 +121,7 @@ public class MultiThreadIncrementRecordApplier extends IncrementRecordApplier {
   protected Map<List<String>, Map<IncrementOpType, List<IncrementRecord>>> buildBucket(List records) {
     Map<List<String>, Map<IncrementOpType, List<IncrementRecord>>> buckets = MigrateMap.makeComputingMap(names -> MigrateMap.makeComputingMap(new Function<IncrementOpType, List<IncrementRecord>>() {
 
+      @Override
       public List<IncrementRecord> apply(IncrementOpType opType) {
         return Lists.newArrayList();
       }
@@ -136,10 +141,12 @@ public class MultiThreadIncrementRecordApplier extends IncrementRecordApplier {
    */
   protected void applyBatch(List<IncrementRecord> incRecords, final JdbcTemplate jdbcTemplate,
       final IncrementOpType opType) {
-    if (incRecords.size() > splitSize) {// 超过一定大小才进行多线程处理
+    // 超过一定大小才进行多线程处理
+    if (incRecords.size() > splitSize) {
       ExecutorTemplate template = new ExecutorTemplate(executor);
       try {
-        int index = 0;// 记录下处理成功的记录下标
+        // 记录下处理成功的记录下标
+        int index = 0;
         int size = incRecords.size();
         // 全量复制时，无顺序要求，数据可以随意切割，直接按照splitSize切分后提交到多线程中进行处理
         for (; index < size; ) {
@@ -147,6 +154,7 @@ public class MultiThreadIncrementRecordApplier extends IncrementRecordApplier {
           final List<IncrementRecord> subList = incRecords.subList(index, end);
           template.submit(new Runnable() {
 
+            @Override
             public void run() {
               String name = Thread.currentThread().getName();
               try {
@@ -158,7 +166,8 @@ public class MultiThreadIncrementRecordApplier extends IncrementRecordApplier {
               }
             }
           });
-          index = end;// 移动到下一批次
+          // 移动到下一批次
+          index = end;
         }
         // 等待所有结果返回
         template.waitForResult();
@@ -182,43 +191,41 @@ public class MultiThreadIncrementRecordApplier extends IncrementRecordApplier {
     try {
       TableSqlUnit sqlUnit = getSqlUnit(incRecords.get(0));
       String applierSql = sqlUnit.applierSql;
-      final Map<String, Integer> indexs = sqlUnit.applierIndexs;
-      jdbcTemplate.execute(applierSql, new PreparedStatementCallback() {
+      final Map<String, Integer> indexes = sqlUnit.applierIndexs;
+      jdbcTemplate.execute(applierSql, (PreparedStatementCallback) ps -> {
 
-        public Object doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
+        for (IncrementRecord incRecord : incRecords) {
 
-          for (IncrementRecord incRecord : incRecords) {
-            int count = 0;
+          int count = 0;
 
-            // 需要先加字段
-            List<ColumnValue> cvs = incRecord.getColumns();
-            for (ColumnValue cv : cvs) {
-              Integer index = getIndex(indexs, cv, true); // 考虑delete的目标库主键，可能在源库的column中
-              if (index != null) {
-                ps.setObject(index, cv.getValue(), cv.getColumn().getType());
-                count++;
-              }
+          // 需要先加字段
+          List<ColumnValue> cvs = incRecord.getColumns();
+          for (ColumnValue cv : cvs) {
+            Integer index = getIndex(indexes, cv, true); // 考虑delete的目标库主键，可能在源库的column中
+            if (index != null) {
+              ps.setObject(index, cv.getValue(), cv.getColumn().getType());
+              count++;
             }
-
-            // 添加主键
-            List<ColumnValue> pks = incRecord.getPrimaryKeys();
-            for (ColumnValue pk : pks) {
-              Integer index = getIndex(indexs, pk, true);// 考虑delete的目标库主键，可能在源库的column中
-              if (index != null) {
-                ps.setObject(index, pk.getValue(), pk.getColumn().getType());
-                count++;
-              }
-            }
-
-            if (count != indexs.size()) {
-              processMissColumn(incRecord, indexs);
-            }
-
-            ps.addBatch();
           }
 
-          return ps.executeBatch();
+          // 添加主键
+          List<ColumnValue> pks = incRecord.getPrimaryKeys();
+          for (ColumnValue pk : pks) {
+            Integer index = getIndex(indexes, pk, true);// 考虑delete的目标库主键，可能在源库的column中
+            if (index != null) {
+              ps.setObject(index, pk.getValue(), pk.getColumn().getType());
+              count++;
+            }
+          }
+
+          if (count != indexes.size()) {
+            processMissColumn(incRecord, indexes);
+          }
+
+          ps.addBatch();
         }
+
+        return ps.executeBatch();
       });
     } catch (Exception e) {
       // catch the biggest exception,no matter how, rollback it;
@@ -236,11 +243,13 @@ public class MultiThreadIncrementRecordApplier extends IncrementRecordApplier {
 
   }
 
+  @Override
   protected void applyOneByOne(List<IncrementRecord> incRecords, final JdbcTemplate jdbcTemplate) {
     if (incRecords.size() > 1) {
       ExecutorTemplate template = new ExecutorTemplate(executor);
       try {
-        int index = 0;// 记录下处理成功的记录下标
+        // 记录下处理成功的记录下标
+        int index = 0;
         int size = incRecords.size();
         // 全量复制时，无顺序要求，数据可以随意切割，直接按照splitSize切分后提交到多线程中进行处理
         for (; index < size; ) {
@@ -248,6 +257,7 @@ public class MultiThreadIncrementRecordApplier extends IncrementRecordApplier {
           final List<IncrementRecord> subList = incRecords.subList(index, end);
           template.submit(new Runnable() {
 
+            @Override
             public void run() {
               String name = Thread.currentThread().getName();
               try {

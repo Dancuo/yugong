@@ -5,8 +5,8 @@ package com.taobao.yugong.common.model;
  */
 public enum DbType {
 
-  MYSQL("com.mysql.jdbc.Driver"),
-  DRDS("com.mysql.jdbc.Driver"),
+  MYSQL("com.mysql.cj.jdbc.Driver"),
+  DRDS("com.mysql.cj.jdbc.Driver"),
   ORACLE("oracle.jdbc.driver.OracleDriver"),
   SQL_SERVER("com.microsoft.sqlserver.jdbc.SQLServerDriver");
 

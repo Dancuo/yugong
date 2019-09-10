@@ -46,6 +46,7 @@ public class OracleOnceFullRecordExtractor extends AbstractOracleRecordExtractor
     this.context = context;
   }
 
+  @Override
   public void start() {
     super.start();
 
@@ -66,6 +67,7 @@ public class OracleOnceFullRecordExtractor extends AbstractOracleRecordExtractor
     tracer.update(context.getTableMeta().getFullName(), ProgressStatus.FULLING);
   }
 
+  @Override
   public void stop() {
     super.stop();
 
@@ -78,6 +80,7 @@ public class OracleOnceFullRecordExtractor extends AbstractOracleRecordExtractor
     tracer.update(context.getTableMeta().getFullName(), ProgressStatus.SUCCESS);
   }
 
+  @Override
   public Position ack(List<Record> records) throws YuGongException {
     return null;
   }

@@ -14,10 +14,12 @@ public abstract class AbstractYuGongLifeCycle implements YuGongLifeCycle {
   protected final Logger logger = LoggerFactory.getLogger(this.getClass());
   protected volatile boolean running = false;                                   // 是否处于运行中
 
+  @Override
   public boolean isStart() {
     return running;
   }
 
+  @Override
   public void start() {
     if (running) {
       return;
@@ -26,6 +28,7 @@ public abstract class AbstractYuGongLifeCycle implements YuGongLifeCycle {
     running = true;
   }
 
+  @Override
   public void stop() {
     if (!running) {
       return;
@@ -34,11 +37,13 @@ public abstract class AbstractYuGongLifeCycle implements YuGongLifeCycle {
     running = false;
   }
 
+  @Override
   public void abort(String why, Throwable e) {
     logger.error("abort caused by " + why, e);
     stop();
   }
 
+  @Override
   public boolean isStop() {
     return !isStart();
   }

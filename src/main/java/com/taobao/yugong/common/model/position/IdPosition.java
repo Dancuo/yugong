@@ -61,6 +61,7 @@ public class IdPosition extends Position {
     return this.progressHistory.contains(progress);
   }
 
+  @Override
   public IdPosition clone() {
     IdPosition position = new IdPosition();
     position.setId(id);

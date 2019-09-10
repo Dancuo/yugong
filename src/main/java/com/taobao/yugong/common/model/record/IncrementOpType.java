@@ -14,7 +14,12 @@ import java.util.Optional;
  * @author agapple 2013-9-16 下午4:21:27
  */
 public enum IncrementOpType {
-  I/* INSERT */, U/* UPDATE */, D/* DELETE */;
+  /* INSERT */
+  I,
+  /* UPDATE */
+  U,
+  /* DELETE */
+  D;
   
   public static Optional<IncrementOpType> ofSqlServerCdc(int operation) {
     Map<Integer, IncrementOpType> mapping = ImmutableMap.of(
@@ -29,6 +34,22 @@ public enum IncrementOpType {
       throw new YuGongException(String.format("Do not support %s", operation));
     }
     return Optional.of(mapping.get(operation));
+  }
+
+  public static Optional<IncrementOpType> ofSqlServerInc(int operation) {
+    Map<Integer, IncrementOpType> mapping = ImmutableMap.of(
+            1, I,
+            2, U,
+            3, D
+    );
+    if (!mapping.containsKey(operation)) {
+      throw new YuGongException(String.format("Do not support %s", operation));
+    }
+    return Optional.of(mapping.get(operation));
+  }
+
+  public static boolean isSqlServerIncDelete(int operation) {
+    return operation == 3;
   }
 
   public static Optional<IncrementOpType> ofMysqlCancal(CanalEntry.EventType eventType) {

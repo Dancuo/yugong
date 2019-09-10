@@ -24,6 +24,7 @@ public class AllRecordApplier extends AbstractRecordApplier {
     this.context = context;
   }
 
+  @Override
   public void start() {
     super.start();
 
@@ -37,6 +38,7 @@ public class AllRecordApplier extends AbstractRecordApplier {
     }
   }
 
+  @Override
   public void stop() {
     super.stop();
 

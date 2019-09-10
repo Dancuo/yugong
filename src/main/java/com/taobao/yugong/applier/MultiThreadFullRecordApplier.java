@@ -47,6 +47,7 @@ public class MultiThreadFullRecordApplier extends FullRecordApplier {
     this.executor = executor;
   }
 
+  @Override
   public void start() {
     super.start();
 
@@ -62,12 +63,14 @@ public class MultiThreadFullRecordApplier extends FullRecordApplier {
     }
   }
 
+  @Override
   public void stop() {
     super.stop();
 
     executor.shutdownNow();
   }
 
+  @Override
   public void apply(final List<Record> records) throws YuGongException {
     // no one,just return
     if (YuGongUtils.isEmpty(records)) {
@@ -77,7 +80,8 @@ public class MultiThreadFullRecordApplier extends FullRecordApplier {
     if (records.size() > splitSize) {
       ExecutorTemplate template = new ExecutorTemplate(executor);
       try {
-        int index = 0;// 记录下处理成功的记录下标
+        // 记录下处理成功的记录下标
+        int index = 0;
         int size = records.size();
         // 全量复制时，无顺序要求，数据可以随意切割，直接按照splitSize切分后提交到多线程中进行处理
         for (; index < size; ) {
@@ -85,6 +89,7 @@ public class MultiThreadFullRecordApplier extends FullRecordApplier {
           final List<Record> subList = records.subList(index, end);
           template.submit(new Runnable() {
 
+            @Override
             public void run() {
               String name = Thread.currentThread().getName();
               try {
@@ -96,7 +101,8 @@ public class MultiThreadFullRecordApplier extends FullRecordApplier {
               }
             }
           });
-          index = end;// 移动到下一批次
+          // 移动到下一批次
+          index = end;
         }
 
         // 等待所有结果返回

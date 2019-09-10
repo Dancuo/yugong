@@ -27,6 +27,7 @@ public class OracleRecRecordExtractor extends AbstractOracleRecordExtractor {
     this.context = context;
   }
 
+  @Override
   public void start() {
     super.start();
 
@@ -37,18 +38,22 @@ public class OracleRecRecordExtractor extends AbstractOracleRecordExtractor {
     }
   }
 
+  @Override
   public void stop() {
     super.stop();
   }
 
+  @Override
   public List<Record> extract() throws YuGongException {
     return new ArrayList<Record>();
   }
 
+  @Override
   public Position ack(List<Record> records) throws YuGongException {
     return null;
   }
 
+  @Override
   public ExtractStatus status() {
     return ExtractStatus.TABLE_END;// 直接返回退出
   }

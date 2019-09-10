@@ -74,6 +74,7 @@ public class OracleMaterializedIncRecordExtractor extends AbstractOracleRecordEx
     this.context = context;
   }
 
+  @Override
   public void start() {
     super.start();
 
@@ -110,11 +111,13 @@ public class OracleMaterializedIncRecordExtractor extends AbstractOracleRecordEx
     tracer.update(context.getTableMeta().getFullName(), ProgressStatus.INCING);
   }
 
+  @Override
   public void stop() {
     super.stop();
     tracer.update(context.getTableMeta().getFullName(), ProgressStatus.SUCCESS);
   }
 
+  @Override
   public List extract() throws YuGongException {
     JdbcTemplate jdbcTemplate = new JdbcTemplate(context.getSourceDs());
     List<OracleIncrementRecord> mlogRecords = getMlogRecord(jdbcTemplate);
@@ -137,6 +140,7 @@ public class OracleMaterializedIncRecordExtractor extends AbstractOracleRecordEx
     return mlogRecords;
   }
 
+  @Override
   public Position ack(final List<Record> records) throws YuGongException {
     JdbcTemplate jdbcTemplate = new JdbcTemplate(context.getSourceDs());
     jdbcTemplate.execute(mlogCleanSql, new PreparedStatementCallback() {

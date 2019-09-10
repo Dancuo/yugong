@@ -30,11 +30,13 @@ public class ColumnMeta {
   }
 
 
+  @Override
   public ColumnMeta clone() {
 //    return new ColumnMeta(this.rawName, this.type);
     return new ColumnMeta(this.name, this.type);
   }
 
+  @Override
   public String toString() {
     return String.format("ColumnMeta[name=%s,type=%s]", this.name, JDBCType.valueOf(this.type));
   }

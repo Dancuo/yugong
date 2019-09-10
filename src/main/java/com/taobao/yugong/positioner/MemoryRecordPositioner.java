@@ -13,10 +13,12 @@ public class MemoryRecordPositioner extends AbstractYuGongLifeCycle implements R
 
   protected volatile Position position;
 
+  @Override
   public Position getLatest() {
     return position;
   }
 
+  @Override
   public void persist(Position position) throws YuGongException {
     this.position = position;
   }

@@ -124,18 +124,19 @@ public class YuGongUtils {
     }
   }
 
-  public static boolean isBlobType(int sqlType) {
-    if (sqlType == Types.BLOB || sqlType == Types.BINARY || sqlType == Types.VARBINARY
-        || sqlType == Types.LONGVARBINARY) {
+  public static boolean isNumberType(int sqlType) {
+    if (sqlType == Types.INTEGER || sqlType == Types.BIGINT || sqlType == Types.DECIMAL
+            || sqlType == Types.DOUBLE || sqlType == Types.SMALLINT || sqlType == Types.TINYINT
+            || sqlType == Types.BIT || sqlType == Types.REAL) {
       return true;
     } else {
       return false;
     }
   }
 
-  public static boolean isNumber(int sqlType) {
-    if (sqlType == Types.TINYINT || sqlType == Types.SMALLINT || sqlType == Types.INTEGER
-        || sqlType == Types.BIGINT || sqlType == Types.NUMERIC || sqlType == Types.DECIMAL) {
+  public static boolean isBlobType(int sqlType) {
+    if (sqlType == Types.BLOB || sqlType == Types.BINARY || sqlType == Types.VARBINARY
+        || sqlType == Types.LONGVARBINARY) {
       return true;
     } else {
       return false;

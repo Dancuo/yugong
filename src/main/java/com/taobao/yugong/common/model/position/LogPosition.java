@@ -52,6 +52,7 @@ public class LogPosition extends Position {
     this.timestamp = timestamp;
   }
 
+  @Override
   public LogPosition clone() {
     return new LogPosition(journalName, position, timestamp);
   }

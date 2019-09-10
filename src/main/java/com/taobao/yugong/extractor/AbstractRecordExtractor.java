@@ -24,6 +24,7 @@ public abstract class AbstractRecordExtractor extends AbstractYuGongLifeCycle
   @Setter
   protected volatile ExtractStatus status = ExtractStatus.NORMAL;
 
+  @Override
   public ExtractStatus status() {
     return status;
   }

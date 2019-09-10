@@ -71,9 +71,11 @@ public class ExecutorTemplate {
     RuntimeException exception = null;
     // 开始处理结果
     int index = 0;
-    while (index < futures.size()) { // 循环处理发出去的所有任务
+    while (index < futures.size()) {
+      // 循环处理发出去的所有任务
       try {
-        Future future = comletions.take();// 它也可能被打断
+        Future future = comletions.take();
+        // 它也可能被打断
         result.add(future.get());
       } catch (Throwable e) {
         exception = new RuntimeException(e);

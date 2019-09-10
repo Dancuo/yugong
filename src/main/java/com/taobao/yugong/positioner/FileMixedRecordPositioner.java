@@ -44,6 +44,7 @@ public class FileMixedRecordPositioner extends MemoryRecordPositioner implements
   private AtomicBoolean needFlush = new AtomicBoolean(false);
   private AtomicBoolean needReload = new AtomicBoolean(true);
 
+  @Override
   public void start() {
     super.start();
 
@@ -66,6 +67,7 @@ public class FileMixedRecordPositioner extends MemoryRecordPositioner implements
     // 启动定时工作任务
     executor.scheduleAtFixedRate(new Runnable() {
 
+      @Override
       public void run() {
         try {
           // 定时将内存中的最新值刷到file中，多次变更只刷一次
@@ -80,6 +82,7 @@ public class FileMixedRecordPositioner extends MemoryRecordPositioner implements
     }, period, period, TimeUnit.MILLISECONDS);
   }
 
+  @Override
   public void stop() {
     super.stop();
 
@@ -87,13 +90,20 @@ public class FileMixedRecordPositioner extends MemoryRecordPositioner implements
     executor.shutdownNow();
   }
 
+  @Override
   public void persist(Position position) {
     needFlush.set(true);
     super.persist(position);
   }
 
+  @Override
   public Position getLatest() {
     if (needReload.compareAndSet(true, false)) {
+
+      if(null == dataFile && (dataDir != null && dataFileName != null)) {
+        dataFile = new File(dataDir, dataFileName);
+      }
+
       Position position = loadDataFromFile(dataFile);
       super.persist(position);
       return position;

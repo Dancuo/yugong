@@ -81,8 +81,11 @@ public class YugongApp {
         log.info("## YuGong is down.");
       }
     }));
-    controller.waitForDone();// 如果所有都完成，则进行退出
-    Thread.sleep(3 * 1000); // 等待3s，清理上下文
+
+    // 如果所有都完成，则进行退出
+    controller.waitForDone();
+    // 等待3s，清理上下文
+    Thread.sleep(3 * 1000);
     log.info("## stop the YuGong");
     if (controller.isStart()) {
       controller.stop();

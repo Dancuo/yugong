@@ -33,6 +33,7 @@ public class DataSourceFactory extends AbstractYuGongLifeCycle implements YuGong
 
   private Map<DataSourceConfig, DataSource> dataSources;
 
+  @Override
   public void start() {
     super.start();
     dataSources = MigrateMap.makeComputingMap(
@@ -41,6 +42,7 @@ public class DataSourceFactory extends AbstractYuGongLifeCycle implements YuGong
 
   }
 
+  @Override
   public void stop() {
     super.stop();
 
@@ -81,8 +83,9 @@ public class DataSourceFactory extends AbstractYuGongLifeCycle implements YuGong
       dataSource.setMaxWait(maxWait);
       dataSource.setDriverClassName(dbType.getDriver());
       dataSource.setTestOnBorrow(true);
+
       // 动态的参数
-      if (props != null && props.size() > 0) {
+      if (props.size() > 0) {
         for (Map.Entry<Object, Object> entry : props.entrySet()) {
           dataSource.addConnectionProperty(String.valueOf(entry.getKey()), String.valueOf(entry.getValue()));
         }
@@ -111,6 +114,10 @@ public class DataSourceFactory extends AbstractYuGongLifeCycle implements YuGong
         logger.error("Unknown database type");
         throw new YuGongException("Unknown database type");
       }
+
+      logger.info("Data source url: {} user: {} password: {}, maxActive {}", dataSource.getUrl(),
+              dataSource.getUsername(), dataSource.getPassword(), dataSource.getMaxActive());
+
       return dataSource;
     } catch (Throwable e) {
       throw new YuGongException("create dataSource error!", e);

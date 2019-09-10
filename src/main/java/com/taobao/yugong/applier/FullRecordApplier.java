@@ -45,6 +45,7 @@ public class FullRecordApplier extends AbstractRecordApplier {
         this.context = context;
     }
 
+    @Override
     public void start() {
         super.start();
         sourceDbType = YuGongUtils.judgeDbType(context.getSourceDs());
@@ -52,6 +53,7 @@ public class FullRecordApplier extends AbstractRecordApplier {
         applierSqlCache = MigrateMap.makeMap();
     }
 
+    @Override
     public void stop() {
         super.stop();
     }
@@ -59,6 +61,7 @@ public class FullRecordApplier extends AbstractRecordApplier {
     /**
      * default batch insert
      */
+    @Override
     public void apply(List<Record> records) throws YuGongException {
         // no one,just return
         if (YuGongUtils.isEmpty(records)) {
@@ -385,12 +388,13 @@ public class FullRecordApplier extends AbstractRecordApplier {
         if (sqlUnit == null) {
             synchronized (names) {
                 sqlUnit = applierSqlCache.get(names);
-                if (sqlUnit == null) { // double-check
+                // double-check
+                if (sqlUnit == null) {
                     sqlUnit = new TableSqlUnit();
-                    String applierSql = null;
+                    String applierSql;
+                    String schemaName = context.isIgnoreSchema() ? null : names.get(0);
                     Table meta = TableMetaGenerator.getTableMeta(targetDbType, context.getTargetDs(),
-                            context.isIgnoreSchema() ? null : names.get(0),
-                            names.get(1));
+                            schemaName, names.get(1));
 
                     String[] primaryKeys = getPrimaryNames(record);
                     String[] columns = getColumnNames(record);

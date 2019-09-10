@@ -44,6 +44,7 @@ public class CheckRecordApplier extends AbstractRecordApplier {
     this.context = context;
   }
 
+  @Override
   public void start() {
     super.start();
 
@@ -61,6 +62,7 @@ public class CheckRecordApplier extends AbstractRecordApplier {
     selectSqlCache = MigrateMap.makeMap();
   }
 
+  @Override
   public void stop() {
     super.stop();
   }

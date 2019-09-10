@@ -49,22 +49,25 @@ public class SqlServerFullRecordExtractor extends AbstractFullRecordExtractor {
       this.parameterIndexMap = PARAMETER_INDEX_MAP;
 
       //TODO: 暂不支持extractSql的自定义
-      if (!Strings.isNullOrEmpty(extractSql))throw new IllegalArgumentException("指定主键的模式不支持extractSql的自定义");
+      if (!Strings.isNullOrEmpty(extractSql)) {
+        throw new IllegalArgumentException("指定主键的模式不支持extractSql的自定义");
+      }
 
       String colStr = SqlTemplates.COMMON.makeColumn(context.getTableMeta().getColumnsWithPrimary());
+      // Defined one pk
       if (context.getSpecifiedPks().containsKey(tableName)
-          && context.getSpecifiedPks().get(tableName).length == 1) {  // Defined one pk
-        String definedPramiryKey = context.getSpecifiedPks().get(tableName)[0];
+          && context.getSpecifiedPks().get(tableName).length == 1) {
+        String definedPrimaryKey = context.getSpecifiedPks().get(tableName)[0];
         this.extractSql = MessageFormat.format(
             DEFALT_EXTRACT_SQL_FORMAT,
             colStr,
             schemaName,
             tableName,
-            definedPramiryKey
+            definedPrimaryKey
         );
         this.getMinPkSql = MessageFormat.format(
             MIN_PK_FORMAT_WHIHOUT_ESCAPE,
-            definedPramiryKey,
+            definedPrimaryKey,
             schemaName,
             tableName
         );
@@ -73,14 +76,14 @@ public class SqlServerFullRecordExtractor extends AbstractFullRecordExtractor {
         List<ColumnMeta> pks = context.getTableMeta().getPrimaryKeys();
         context.getTableMeta().getColumns().addAll(pks);
         pks.clear();
-        if (tableName.equals("Hujiangid_WXunionid") && definedPramiryKey.equals("UnionId")) {
-          pks.add(new ColumnMeta(definedPramiryKey, Types.VARCHAR));
+        if (tableName.equals("Hujiangid_WXunionid") && definedPrimaryKey.equals("UnionId")) {
+          pks.add(new ColumnMeta(definedPrimaryKey, Types.VARCHAR));
         } else {
-          pks.add(new ColumnMeta(definedPramiryKey, Types.BIGINT));
+          pks.add(new ColumnMeta(definedPrimaryKey, Types.BIGINT));
         }
         context.getTableMeta().setColumns(
          context.getTableMeta().getColumns().stream()
-             .filter(x -> !x.getName().equals(definedPramiryKey))
+             .filter(x -> !x.getName().equals(definedPrimaryKey))
              .collect(Collectors.toList())
         );
       } else { // TODO use physloc in where will be slow, only command in small tables
