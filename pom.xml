@@ -144,11 +144,11 @@
             <artifactId>fastjson</artifactId>
             <version>1.2.60</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/dom4j/dom4j -->
+        <!-- https://mvnrepository.com/artifact/org.dom4j/dom4j -->
         <dependency>
-            <groupId>dom4j</groupId>
+            <groupId>org.dom4j</groupId>
             <artifactId>dom4j</artifactId>
-            <version>1.6.1</version>
+            <version>2.1.1</version>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
@@ -178,13 +178,6 @@
             <scope>provided</scope>
         </dependency>
         <!-- https://mvnrepository.com/artifact/com.oracle/ojdbc14 -->
-        <dependency>
-            <groupId>com.oracle</groupId>
-            <artifactId>ojdbc14</artifactId>
-            <version>10.2.0.4.0</version>
-            <scope>system</scope>
-            <systemPath>D:\Libs\jdbc\ojdbc14-10.2.0.4.0.jar</systemPath>
-        </dependency>
         <dependency>
             <groupId>commons-configuration</groupId>
             <artifactId>commons-configuration</artifactId>
@@ -415,7 +408,7 @@
                             </excludes>
                         </filter>
                     </filters>
-                    <finalName>${name}-shaded</finalName>
+                    <finalName>${project.name}-shaded</finalName>
 
                 </configuration>
                 <executions>
