@@ -12,7 +12,11 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractYuGongLifeCycle implements YuGongLifeCycle {
 
   protected final Logger logger = LoggerFactory.getLogger(this.getClass());
-  protected volatile boolean running = false;                                   // 是否处于运行中
+
+  /**
+   * 是否处于运行中
+   */
+  protected volatile boolean running = false;
 
   @Override
   public boolean isStart() {

@@ -70,7 +70,7 @@ public class YuGongInstance extends AbstractYuGongLifeCycle {
   private List<DataTranslator> translators = Lists.newArrayList();
   @Getter
   @Setter
-  private List<TableMetaTranslator> tableMetaTranslators = Lists.newArrayList(); // XXX
+  private List<TableMetaTranslator> tableMetaTranslators = Lists.newArrayList();
   @Getter
   @Setter
   private RecordPositioner positioner;
@@ -389,7 +389,8 @@ public class YuGongInstance extends AbstractYuGongLifeCycle {
       progressTracer.update(context.getTableMeta().getFullName(), ProgressStatus.FAILED);
       exception = new YuGongException(e);
       mutex.countDown();
-      tableController.release(this); // 释放下
+      // 释放下
+      tableController.release(this);
       Thread.currentThread().interrupt();
     } catch (Throwable e) {
       progressTracer.update(context.getTableMeta().getFullName(), ProgressStatus.FAILED);
@@ -398,7 +399,8 @@ public class YuGongInstance extends AbstractYuGongLifeCycle {
       logger.error("table[{}] start failed caused by {}",
           context.getTableMeta().getFullName(),
           ExceptionUtils.getFullStackTrace(e));
-      tableController.release(this); // 释放下
+      // 释放下
+      tableController.release(this);
     }
   }
 

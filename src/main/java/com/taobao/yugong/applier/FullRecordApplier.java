@@ -235,7 +235,7 @@ public class FullRecordApplier extends AbstractRecordApplier {
      */
     protected void applyOneByOne(JdbcTemplate jdbcTemplate, final List<Record> records,
                                  TableSqlUnit sqlUnit) {
-        final Map<String, Integer> indexs = sqlUnit.applierIndexs;
+        final Map<String, Integer> indexes = sqlUnit.applierIndexs;
 
         List<Record> records4Inserts = new ArrayList<>();
         List<Record> records4Updates = new ArrayList<>();
@@ -272,14 +272,14 @@ public class FullRecordApplier extends AbstractRecordApplier {
                         List<ColumnValue> cvs = record.getColumns();
                         for (ColumnValue cv : cvs) {
                             int type = TypeMapping.map(sourceDbType, targetDbType, cv.getColumn().getType());
-                            ps.setObject(getIndex(indexs, cv), cv.getValue(), type);
+                            ps.setObject(getIndex(indexes, cv), cv.getValue(), type);
                         }
 
                         // 添加主键
                         List<ColumnValue> pks = record.getPrimaryKeys();
                         for (ColumnValue pk : pks) {
                             int type = TypeMapping.map(sourceDbType, targetDbType, pk.getColumn().getType());
-                            ps.setObject(getIndex(indexs, pk), pk.getValue(), type);
+                            ps.setObject(getIndex(indexes, pk), pk.getValue(), type);
                         }
 
                         try {
@@ -315,17 +315,17 @@ public class FullRecordApplier extends AbstractRecordApplier {
                         List<ColumnValue> cvs = record.getColumns();
                         for (ColumnValue cv : cvs) {
                             int type = TypeMapping.map(sourceDbType, targetDbType, cv.getColumn().getType());
-                            ps.setObject(getIndex(indexs, cv), cv.getValue(), type);
+                            ps.setObject(getIndex(indexes, cv), cv.getValue(), type);
                         }
 
                         // 添加主键
                         List<ColumnValue> pks = record.getPrimaryKeys();
                         for (ColumnValue pk : pks) {
                             int type = TypeMapping.map(sourceDbType, targetDbType, pk.getColumn().getType());
-                            ps.setObject(getIndex(indexs, pk), pk.getValue(), type);
+                            ps.setObject(getIndex(indexes, pk), pk.getValue(), type);
                         }
 
-                        int colSize = indexs.size();
+                        int colSize = indexes.size();
 
                         for (ColumnValue pk : pks) {
                             int type = TypeMapping.map(sourceDbType, targetDbType, pk.getColumn().getType());
@@ -342,13 +342,13 @@ public class FullRecordApplier extends AbstractRecordApplier {
                     List<ColumnValue> cvs = record.getColumns();
                     for (ColumnValue cv : cvs) {
                         int type = TypeMapping.map(sourceDbType, targetDbType, cv.getColumn().getType());
-                        ps.setObject(getIndex(indexs, cv), cv.getValue(), type);
+                        ps.setObject(getIndex(indexes, cv), cv.getValue(), type);
                     }
 
                     // 添加主键
                     for (ColumnValue pk : pks) {
                         int type = TypeMapping.map(sourceDbType, targetDbType, pk.getColumn().getType());
-                        ps.setObject(getIndex(indexs, pk), pk.getValue(), type);
+                        ps.setObject(getIndex(indexes, pk), pk.getValue(), type);
                     }
 
                     try {

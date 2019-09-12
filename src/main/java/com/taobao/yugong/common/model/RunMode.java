@@ -70,4 +70,5 @@ public enum RunMode {
   public boolean isCheck() {
     return this == RunMode.CHECK;
   }
+
 }

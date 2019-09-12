@@ -62,6 +62,7 @@ public class MultiThreadCheckRecordApplier extends CheckRecordApplier {
     }
   }
 
+  @Override
   public void apply(final List<Record> records) throws YuGongException {
     // no one,just return
     if (YuGongUtils.isEmpty(records)) {
@@ -71,7 +72,8 @@ public class MultiThreadCheckRecordApplier extends CheckRecordApplier {
     if (records.size() > splitSize) {
       ExecutorTemplate template = new ExecutorTemplate(executor);
       try {
-        int index = 0;// 记录下处理成功的记录下标
+        // 记录下处理成功的记录下标
+        int index = 0;
         int size = records.size();
         // 全量复制时，无顺序要求，数据可以随意切割，直接按照splitSize切分后提交到多线程中进行处理
         for (; index < size; ) {
@@ -79,6 +81,7 @@ public class MultiThreadCheckRecordApplier extends CheckRecordApplier {
           final List<Record> subList = records.subList(index, end);
           template.submit(new Runnable() {
 
+            @Override
             public void run() {
               String name = Thread.currentThread().getName();
               try {
@@ -91,7 +94,8 @@ public class MultiThreadCheckRecordApplier extends CheckRecordApplier {
 
             }
           });
-          index = end;// 移动到下一批次
+          // 移动到下一批次
+          index = end;
         }
 
         // 等待所有结果返回

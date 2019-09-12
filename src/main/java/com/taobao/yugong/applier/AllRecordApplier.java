@@ -51,6 +51,7 @@ public class AllRecordApplier extends AbstractRecordApplier {
     }
   }
 
+  @Override
   public void apply(List<Record> records) throws YuGongException {
     if (YuGongUtils.isEmpty(records)) {
       return;

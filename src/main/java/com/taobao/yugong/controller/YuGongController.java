@@ -43,6 +43,7 @@ import com.taobao.yugong.extractor.oracle.OracleFullRecordExtractor;
 import com.taobao.yugong.extractor.oracle.OracleMaterializedIncRecordExtractor;
 import com.taobao.yugong.extractor.oracle.OracleOnceFullRecordExtractor;
 import com.taobao.yugong.extractor.oracle.OracleRecRecordExtractor;
+import com.taobao.yugong.extractor.sqlserver.SqlServerCdcExtractor;
 import com.taobao.yugong.extractor.sqlserver.SqlServerFullRecordExtractor;
 import com.taobao.yugong.extractor.sqlserver.SqlServerIncExtractor;
 import com.taobao.yugong.positioner.FileMixedRecordPositioner;
@@ -82,7 +83,9 @@ public class YuGongController extends AbstractYuGongLifeCycle {
     private Configuration config;
     private YugongConfiguration yugongConfiguration;
 
-    // 运行模式
+    /**
+     * 运行模式
+     */
     private RunMode runMode;
     private YuGongContext globalContext;
     private DbType sourceDbType = DbType.ORACLE;
@@ -107,7 +110,9 @@ public class YuGongController extends AbstractYuGongLifeCycle {
     private String alarmReceiver;
     private int retryTimes;
     private int retryInterval;
-    //忽略源表pk检查的表
+    /**
+     * 忽略源表pk检查的表
+     */
     private String[] ignorePkInspection;
 
     public YuGongController(Configuration config, YugongConfiguration yugongConfiguration) {
@@ -386,9 +391,20 @@ public class YuGongController extends AbstractYuGongLifeCycle {
                 DateTime dateStart = DateTime.parse(dateStartString, DEFAULT_DATE_TIME_FORMATTER);
                 int noUpdateSleepTime = config.getInt("yugong.extractor.noupdate.sleep", 1000);
                 int stepTime = config.getInt("yugong.inc.steptime", 60 * 10);
-                SqlServerIncExtractor recordExtractor = new SqlServerIncExtractor(context, dateStart,
-                        noUpdateSleepTime, stepTime);
+
+                // Check Trigger Inc Mode
+                AbstractRecordExtractor recordExtractor;
+                boolean triggerIncMode = config.getBoolean("yugong.inc.mode.trigger", false);
+                if (triggerIncMode) {
+                    recordExtractor = new SqlServerIncExtractor(context, dateStart,
+                            noUpdateSleepTime, stepTime);
+
+                } else {
+                    recordExtractor = new SqlServerCdcExtractor(context, dateStart,
+                            noUpdateSleepTime, stepTime);
+                }
                 recordExtractor.setTracer(progressTracer);
+
                 return recordExtractor;
             } else if (sourceDbType == DbType.MYSQL) {
 //        String canalServerIp = config.getString("yugong.canal.ip");
@@ -476,13 +492,22 @@ public class YuGongController extends AbstractYuGongLifeCycle {
             allApplier.setIncApplier(incApplier);
             return allApplier;
         } else if (runMode == RunMode.CHECK) {
+
+            // Check SAMPLE_CHECK mode
+            boolean sampleCheck = config.getBoolean("yugong.check.sample", false);
+            int sampleSize = config.getInt("yugong.check.sample.size", 1000);
+            context.setSampleCheck(sampleCheck);
+            context.setSampleSize(sampleSize);
+
             if (concurrent) {
                 return new MultiThreadCheckRecordApplier(context, threadSize, splitSize, applierExecutor);
             } else {
                 return new CheckRecordApplier(context);
             }
+
         } else {
-            return new FullRecordApplier(context);// 其他情况返回一个full
+            // 其他情况返回一个full
+            return new FullRecordApplier(context);
         }
     }
 
@@ -603,7 +628,8 @@ public class YuGongController extends AbstractYuGongLifeCycle {
                                        boolean ignoreSchema) {
         YuGongContext result = globalContext.cloneGlobalContext();
         result.setTableMeta(table);
-        if (ignoreSchema) {  // 自动识别table是否为无shcema定义
+        // 自动识别table是否为无shcema定义
+        if (ignoreSchema) {
             result.setIgnoreSchema(ignoreSchema);
         }
         return result;
@@ -647,7 +673,9 @@ public class YuGongController extends AbstractYuGongLifeCycle {
         } else {
             properties.setProperty("maxActive", "200");
         }
-        if (dbType.isMysql()) {  // mysql的编码直接交给驱动去做
+
+        // mysql的编码直接交给驱动去做
+        if (dbType.isMysql()) {
             properties.setProperty("characterEncoding", encode);
         }
 
@@ -881,7 +909,8 @@ public class YuGongController extends AbstractYuGongLifeCycle {
     private void processException(Table table, Exception exception) {
         MDC.remove(YuGongConstants.MDC_TABLE_SHIT_KEY);
         abort("process table[" + table.getFullName() + "] has error!", exception);
-        System.exit(-1);// 串行时，出错了直接退出jvm
+        // 串行时，出错了直接退出jvm
+        System.exit(-1);
     }
 
     /**

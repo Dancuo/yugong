@@ -67,6 +67,7 @@ public class CheckRecordApplier extends AbstractRecordApplier {
     super.stop();
   }
 
+  @Override
   public void apply(List<Record> records) throws YuGongException {
     if (YuGongUtils.isEmpty(records)) {
       return;
@@ -113,7 +114,8 @@ public class CheckRecordApplier extends AbstractRecordApplier {
     TableSqlUnit sqlUnit = getSqlUnit(sampleRecord);
     final String schemaName = table.getSchema();
     final String tableName = table.getName();
-    final Map<String, Integer> indexs = sqlUnit.applierIndexs; // FIXME use applier data
+    // FIXME use applier data
+    final Map<String, Integer> indexes = sqlUnit.applierIndexs;
     final List<ColumnMeta> primaryKeys = table.getPrimaryKeys();
     final List<ColumnMeta> columns = table.getColumns();
 
@@ -142,7 +144,7 @@ public class CheckRecordApplier extends AbstractRecordApplier {
         int count = 0;
         for (ColumnValue pk : record.getPrimaryKeys()) {
           // 源库和目标的库主键信息可能不一致
-          Integer index = getIndex(indexs, pk, true);
+          Integer index = getIndex(indexes, pk, true);
           if (index != null) {
             ps.setObject(size * i + index, pk.getValue(), pk.getColumn().getType());
             count++;
@@ -151,15 +153,15 @@ public class CheckRecordApplier extends AbstractRecordApplier {
 
         for (ColumnValue col : record.getColumns()) {
           // 源库和目标的库主键信息可能不一致
-          Integer index = getIndex(indexs, col, true);
+          Integer index = getIndex(indexes, col, true);
           if (index != null) {
             ps.setObject(size * i + index, col.getValue(), col.getColumn().getType());
             count++;
           }
         }
 
-        if (count != indexs.size()) {
-          processMissColumn(record, indexs);
+        if (count != indexes.size()) {
+          processMissColumn(record, indexes);
         }
 
         i++;
@@ -346,7 +348,9 @@ public class CheckRecordApplier extends AbstractRecordApplier {
     }
     synchronized (names) {
       sqlUnit = selectSqlCache.get(names);
-      if (sqlUnit == null) { // double-check
+
+      // double-check
+      if (sqlUnit == null) {
         sqlUnit = new TableSqlUnit();
         String applierSql = null;
         Table meta = TableMetaGenerator.getTableMeta(dbType, context.getTargetDs(),
@@ -398,7 +402,8 @@ public class CheckRecordApplier extends AbstractRecordApplier {
           index++;
         }
 
-        if (index == 1) { // 没有主键
+        // 没有主键
+        if (index == 1) {
           for (String column : columns) {
             indexs.put(column, index);
             index++;
@@ -406,7 +411,8 @@ public class CheckRecordApplier extends AbstractRecordApplier {
         }
 
         // 检查下是否少了列
-        checkIndexColumns(meta, indexs); // TODO add translator
+        // TODO add translator
+        checkIndexColumns(meta, indexs);
 
         sqlUnit.applierSql = applierSql;
         sqlUnit.applierIndexs = indexs;

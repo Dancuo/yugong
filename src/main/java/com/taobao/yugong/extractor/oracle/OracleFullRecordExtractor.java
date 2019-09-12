@@ -35,6 +35,7 @@ public class OracleFullRecordExtractor extends AbstractOracleRecordExtractor {
   // "select /*+index(t {0})*/ {1} from {2}.{3} t where {4} > ? and rownum <= ? order by {4} asc";
   private static final String FORMAT = "select * from (select {0} from {1}.{2} t where {3} > ? order by {3} asc) where rownum <= ?";
   private static final String MIN_PK_FORMAT = "select min({0}) from {1}.{2}";
+  private static final String MAX_PK_FORMAT = "select max({0}) from {1}.{2}";
 
   private static Map<String, Integer> PARAMETER_INDEX_MAP = ImmutableMap.of("id", 1, "limit", 2);
 
@@ -62,8 +63,12 @@ public class OracleFullRecordExtractor extends AbstractOracleRecordExtractor {
       // context.getTableMeta().getFullName(), extractSql);
     }
 
-    if (getMinPkSql == null && StringUtils.isNotBlank(primaryKey)) {
-      this.getMinPkSql = new MessageFormat(MIN_PK_FORMAT).format(new Object[]{primaryKey, schemaName, tableName});
+    if (minPkSql == null && StringUtils.isNotBlank(primaryKey)) {
+      this.minPkSql = new MessageFormat(MIN_PK_FORMAT).format(new Object[]{primaryKey, schemaName, tableName});
+    }
+
+    if (maxPkSql == null && StringUtils.isNotBlank(primaryKey)) {
+      this.maxPkSql = new MessageFormat(MAX_PK_FORMAT).format(new Object[]{primaryKey, schemaName, tableName});
     }
   }
 }

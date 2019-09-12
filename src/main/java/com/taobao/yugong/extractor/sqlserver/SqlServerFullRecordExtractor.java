@@ -24,6 +24,9 @@ public class SqlServerFullRecordExtractor extends AbstractFullRecordExtractor {
   private static final String MIN_PK_FORMAT = "select min([{0}]) from {1}.dbo.[{2}]";
   private static final String MIN_PK_FORMAT_WHIHOUT_ESCAPE = "select min({0}) from {1}.dbo.[{2}]";
 
+  private static final String MAX_PK_FORMAT = "select max([{0}]) from {1}.dbo.[{2}]";
+  private static final String MAX_PK_FORMAT_WHIHOUT_ESCAPE = "select max({0}) from {1}.dbo.[{2}]";
+
   private static final String DEFALT_EXTRACT_SQL_FORMAT =
       "select TOP (?) {0} from {1}.dbo.[{2}] where [{3}] > ? order by [{3}] asc;";
 
@@ -65,11 +68,17 @@ public class SqlServerFullRecordExtractor extends AbstractFullRecordExtractor {
             tableName,
             definedPrimaryKey
         );
-        this.getMinPkSql = MessageFormat.format(
+        this.minPkSql = MessageFormat.format(
             MIN_PK_FORMAT_WHIHOUT_ESCAPE,
             definedPrimaryKey,
             schemaName,
             tableName
+        );
+        this.maxPkSql = MessageFormat.format(
+                MAX_PK_FORMAT_WHIHOUT_ESCAPE,
+                definedPrimaryKey,
+                schemaName,
+                tableName
         );
 
         //上下文主键替换
@@ -94,11 +103,17 @@ public class SqlServerFullRecordExtractor extends AbstractFullRecordExtractor {
             tableName,
             getConvertedPhysloc()
         );
-        this.getMinPkSql = MessageFormat.format(
+        this.minPkSql = MessageFormat.format(
             MIN_PK_FORMAT_WHIHOUT_ESCAPE,
             getConvertedPhysloc(),
             schemaName,
             tableName
+        );
+        this.maxPkSql = MessageFormat.format(
+                MAX_PK_FORMAT_WHIHOUT_ESCAPE,
+                getConvertedPhysloc(),
+                schemaName,
+                tableName
         );
 
         //上下文主键替换
@@ -111,7 +126,8 @@ public class SqlServerFullRecordExtractor extends AbstractFullRecordExtractor {
       String primaryKey = context.getTableMeta().getPrimaryKeys().get(0).getName();
       String schemaName = context.getTableMeta().getSchema();
       String tableName = context.getTableMeta().getName();
-      this.getMinPkSql = MessageFormat.format(MIN_PK_FORMAT, primaryKey, schemaName, tableName);
+      this.minPkSql = MessageFormat.format(MIN_PK_FORMAT, primaryKey, schemaName, tableName);
+      this.maxPkSql = MessageFormat.format(MAX_PK_FORMAT, primaryKey, schemaName, tableName);
       this.parameterIndexMap = PARAMETER_INDEX_MAP;
 
       if (Strings.isNullOrEmpty(extractSql)) {

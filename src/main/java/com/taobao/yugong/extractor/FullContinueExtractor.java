@@ -45,18 +45,32 @@ public class FullContinueExtractor extends AbstractYuGongLifeCycle implements Ru
     this.paramterIndexMap = abstractRecordExtractor.getParameterIndexMap();
     jdbcTemplate = new JdbcTemplate(context.getSourceDs());
 
-    Position position = context.getLastPosition();
-    if (position != null) {
-      IdPosition idPosition = ((IdPosition) position);
-      if (idPosition.getCurrentProgress() == ProgressStatus.FULLING) {
-        id = idPosition.getId();
+    // 抽样最新的SampleSize条样本作比较
+    if(context.isSampleCheck()) {
+
+      Object maxId = getMaxId();
+
+      if(maxId instanceof Number && (Long)maxId > context.getSampleSize()) {
+        id =  (Long)maxId - context.getSampleSize();
+      } else {
+        id = 0;
       }
 
-      if (id == null) {
+    } else {
+      Position position = context.getLastPosition();
+
+      if (position != null) {
+        IdPosition idPosition = ((IdPosition) position);
+        if (idPosition.getCurrentProgress() == ProgressStatus.FULLING) {
+          id = idPosition.getId();
+        }
+
+        if (id == null) {
+          id = getMinId();
+        }
+      } else {
         id = getMinId();
       }
-    } else {
-      id = getMinId();
     }
 
     logger.info(context.getTableMeta().getFullName() + " start postion:" + id);
@@ -64,10 +78,10 @@ public class FullContinueExtractor extends AbstractYuGongLifeCycle implements Ru
 
   private Object getMinId() {
     if (jdbcTemplate == null
-        || !StringUtils.isNotBlank(fullRecordExtractor.getGetMinPkSql())) {
+        || !StringUtils.isNotBlank(fullRecordExtractor.getMinPkSql())) {
       throw new YuGongException("jdbcTemplate or getMinPkSql is null while getMinId");
     }
-    Object min = jdbcTemplate.execute(fullRecordExtractor.getGetMinPkSql(),
+    Object min = jdbcTemplate.execute(fullRecordExtractor.getMinPkSql(),
         (PreparedStatementCallback) ps -> {
           ResultSet rs = ps.executeQuery();
           Object re = null;
@@ -85,16 +99,42 @@ public class FullContinueExtractor extends AbstractYuGongLifeCycle implements Ru
         min = "";
       }
     } else {
-      if (min instanceof Number) {
-        min = 0;
-      } else {
-        min = "";
-      }
+      min = 0;
     }
 
     return min;
   }
 
+  private Object getMaxId() {
+    if (jdbcTemplate == null
+            || !StringUtils.isNotBlank(fullRecordExtractor.getMaxPkSql())) {
+      throw new YuGongException("jdbcTemplate or getMinPkSql is null while getMinId");
+    }
+    Object max = jdbcTemplate.execute(fullRecordExtractor.getMaxPkSql(),
+            (PreparedStatementCallback) ps -> {
+              ResultSet rs = ps.executeQuery();
+              Object re = null;
+              while (rs.next()) {
+                re = rs.getObject(1);
+                break;
+              }
+              return re;
+            });
+
+    if (max != null) {
+      if (max instanceof Number) {
+        max = Long.parseLong(String.valueOf(max));
+      } else {
+        max = "";
+      }
+    } else {
+      max = 0;
+    }
+
+    return max;
+  }
+
+  @Override
   public void run() {
     while (running) {
       queryAndSaveToQueue();

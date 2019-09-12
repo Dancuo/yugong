@@ -29,7 +29,10 @@ import java.util.concurrent.LinkedBlockingQueue;
 public abstract class AbstractFullRecordExtractor extends AbstractRecordExtractor {
   @Getter
   @Setter
-  protected String getMinPkSql;
+  protected String minPkSql;
+  @Getter
+  @Setter
+  protected String maxPkSql;
   @Getter
   @Setter
   protected String extractSql;
