@@ -59,7 +59,6 @@ public class YugongApp {
     }
   }
 
-
   private static void run(PropertiesConfiguration config,
       YugongConfiguration yugongConfiguration) throws InterruptedException {
     final YuGongController controller = new YuGongController(config, yugongConfiguration);

@@ -56,9 +56,9 @@ public abstract class AbstractRecordApplier extends AbstractYuGongLifeCycle
 
   /**
    * 检查下是否存在必要的字段
-   * @param indexs source table index
+   * @param indexes source table index
    */
-  protected void checkIndexColumns(Table targetTableMeta, Map<String, Integer> indexs) {
+  protected void checkIndexColumns(Table targetTableMeta, Map<String, Integer> indexes) {
     Set<String> idx = new HashSet<>();
     for (ColumnMeta column : targetTableMeta.getColumns()) {
       idx.add(column.getName());
@@ -68,20 +68,20 @@ public abstract class AbstractRecordApplier extends AbstractYuGongLifeCycle
       idx.add(column.getName());
     }
 
-    for (String key : indexs.keySet()) {
+    for (String key : indexes.keySet()) {
       if (!idx.contains(key)) {
         throw new YuGongException("not found column[" + key + "] in target db");
       }
     }
   }
 
-  protected void checkColumnsWithoutPk(Table meta, Map<String, Integer> indexs) {
+  protected void checkColumnsWithoutPk(Table meta, Map<String, Integer> indexes) {
     Set<String> idx = new HashSet<String>();
     for (ColumnMeta column : meta.getColumns()) {
       idx.add(column.getName());
     }
 
-    for (String key : indexs.keySet()) {
+    for (String key : indexes.keySet()) {
       if (!idx.contains(key)) {
         throw new YuGongException("not found column[" + key + "] in target db");
       }

@@ -196,7 +196,7 @@ public class YuGongController extends AbstractYuGongLifeCycle {
                     new ThreadPoolExecutor.CallerRunsPolicy());
         }
         for (TableHolder tableHolder : tableMetas) {
-            YuGongContext context = buildContext(globalContext, tableHolder.table, tableHolder.ignoreSchema);
+            YuGongContext context = buildContext(globalContext, tableHolder.table);
             //add ignorePkInspection
             if (ArrayUtils.isNotEmpty(ignorePkInspection) && YuGongUtils.judgeDbType(context.getSourceDs()) != DbType.SQL_SERVER) {
                 throw new IllegalArgumentException("属性yugong.table.ignorePkInspection仅支持SQL Server");
@@ -377,7 +377,7 @@ public class YuGongController extends AbstractYuGongLifeCycle {
                 return recordExtractor;
             } else if (sourceDbType == DbType.SQL_SERVER) {
 
-                String dateStartString = config.getString("yugong.cdc.time.start");
+                String dateStartString = config.getString("yugong.inc.time.start");
 
                 // Read date time from IdPosition record at first
                 if (null == dateStartString && positioner != null && positioner.getLatest() != null) {
@@ -557,6 +557,11 @@ public class YuGongController extends AbstractYuGongLifeCycle {
         if (translatorsConfs == null) {
             translatorsConfs = Lists.newArrayList();
         }
+
+        // Add * record translator
+        translatorsConfs.addAll(yugongConfiguration.getTranslators().getRecord()
+                .get("*"));
+
         List<TranslatorConf> beforeTranslator = yugongConfiguration.getTranslators()
                 .getRecord().get(BEFORE_TRANSLATOR);
         if (beforeTranslator != null) {
@@ -567,6 +572,7 @@ public class YuGongController extends AbstractYuGongLifeCycle {
         if (afterTranslator != null) {
             translatorsConfs.addAll(afterTranslator);
         }
+
         translatorsConfs.forEach(translatorConf -> {
             DataTranslator dataTranslator = TranslatorRegister.newDataTranslator(translatorConf);
             if (dataTranslator != null) {
@@ -575,6 +581,7 @@ public class YuGongController extends AbstractYuGongLifeCycle {
                 throw new YuGongException(String.format("Cannot load conf: %s", translatorConf.getClazz()));
             }
         });
+
         return translators;
     }
 
@@ -624,14 +631,9 @@ public class YuGongController extends AbstractYuGongLifeCycle {
         }
     }
 
-    private YuGongContext buildContext(YuGongContext globalContext, Table table,
-                                       boolean ignoreSchema) {
+    private YuGongContext buildContext(YuGongContext globalContext, Table table) {
         YuGongContext result = globalContext.cloneGlobalContext();
         result.setTableMeta(table);
-        // 自动识别table是否为无shcema定义
-        if (ignoreSchema) {
-            result.setIgnoreSchema(ignoreSchema);
-        }
         return result;
     }
 
@@ -720,12 +722,11 @@ public class YuGongController extends AbstractYuGongLifeCycle {
                 if (!isBlackTable(whiteTable, tableBlackList)) {
                     String[] strs = StringUtils.split(whiteTable, ".");
                     List<Table> whiteTables;
-                    boolean ignoreSchema = false;
+
                     if (strs.length == 1) {
                         whiteTables = TableMetaGenerator.getTableMetasWithoutColumn(globalContext.getSourceDs(),
                                 null,
                                 strs[0]);
-                        ignoreSchema = true;
                     } else if (strs.length == 2) {
                         whiteTables = TableMetaGenerator.getTableMetasWithoutColumn(globalContext.getSourceDs(),
                                 strs[0],
@@ -747,7 +748,6 @@ public class YuGongController extends AbstractYuGongLifeCycle {
                             // 构建一下拆分条件
                             DataTranslator translator = buildExtKeys(table, (String) obj, targetDbType);
                             TableHolder holder = new TableHolder(table);
-                            holder.ignoreSchema = ignoreSchema;
                             if (translator != null) {
                                 holder.translators.add(translator);
                             }
@@ -950,7 +950,6 @@ public class YuGongController extends AbstractYuGongLifeCycle {
         }
 
         Table table;
-        boolean ignoreSchema = false;
         List<DataTranslator> translators = Lists.newArrayList(); // ugly
 
         @Override

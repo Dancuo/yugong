@@ -46,7 +46,7 @@ public class FullContinueExtractor extends AbstractYuGongLifeCycle implements Ru
     jdbcTemplate = new JdbcTemplate(context.getSourceDs());
 
     // 抽样最新的SampleSize条样本作比较
-    if(context.isSampleCheck()) {
+    if(context.getRunMode().isCheck() && context.isSampleCheck()) {
 
       Object maxId = getMaxId();
 
