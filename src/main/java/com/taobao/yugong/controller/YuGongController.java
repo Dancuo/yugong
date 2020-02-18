@@ -559,8 +559,11 @@ public class YuGongController extends AbstractYuGongLifeCycle {
         }
 
         // Add * record translator
-        translatorsConfs.addAll(yugongConfiguration.getTranslators().getRecord()
-                .get("*"));
+        List<TranslatorConf> allTransConfs = yugongConfiguration.getTranslators().getRecord()
+                .get("*");
+        if(allTransConfs != null) {
+            translatorsConfs.addAll(allTransConfs);
+        }
 
         List<TranslatorConf> beforeTranslator = yugongConfiguration.getTranslators()
                 .getRecord().get(BEFORE_TRANSLATOR);
