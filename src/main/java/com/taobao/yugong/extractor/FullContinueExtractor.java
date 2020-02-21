@@ -50,10 +50,18 @@ public class FullContinueExtractor extends AbstractYuGongLifeCycle implements Ru
 
       Object maxId = getMaxId();
 
-      if(maxId instanceof Number && (Long)maxId > context.getSampleSize()) {
-        id =  (Long)maxId - context.getSampleSize();
-      } else {
-        id = 0;
+      try {
+        if (maxId instanceof Number && (Long) maxId > context.getSampleSize()) {
+          id = (Long) maxId - context.getSampleSize();
+        } else {
+          id = 0;
+        }
+      } catch (ClassCastException cce) {
+        if ((Integer)maxId > context.getSampleSize()) {
+          id = (Integer) maxId - context.getSampleSize();
+        } else {
+          id = 0;
+        }
       }
 
     } else {

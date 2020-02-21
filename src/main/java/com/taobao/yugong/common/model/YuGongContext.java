@@ -78,7 +78,7 @@ public class YuGongContext {
   /**
    * 抽样大小
    */
-  private long sampleSize = 1000;
+  private int sampleSize = 1000;
 
   /**
    * 每张表指定的主键或联合主键
