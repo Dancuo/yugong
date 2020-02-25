@@ -13,6 +13,7 @@ import com.taobao.yugong.common.db.sql.SqlTemplates;
 import com.taobao.yugong.common.model.DbType;
 import com.taobao.yugong.common.model.YuGongContext;
 import com.taobao.yugong.common.model.record.Record;
+import com.taobao.yugong.common.stats.ProgressTracer;
 import com.taobao.yugong.common.utils.YuGongUtils;
 import com.taobao.yugong.exception.YuGongException;
 
@@ -75,7 +76,11 @@ public class CheckRecordApplier extends AbstractRecordApplier {
       return;
     }
 
-    doApply(records);
+    List<String> diffResults = doApply(records);
+
+    if(!diffResults.isEmpty()) {
+      logger.warn("Diff results size {}", diffResults.size());
+    }
   }
 
   /**
@@ -327,6 +332,7 @@ public class CheckRecordApplier extends AbstractRecordApplier {
       String diff = RecordDiffer.diff(record, recordMap2.remove(primaryKeys1));
       if (!Strings.isNullOrEmpty(diff)) {
         diffResults.add(diff);
+        logger.warn("Check table [{}] find diff: {}", record.getTableName(), diff);
       }
     }
 
