@@ -332,7 +332,7 @@ public class CheckRecordApplier extends AbstractRecordApplier {
       String diff = RecordDiffer.diff(record, recordMap2.remove(primaryKeys1));
       if (!Strings.isNullOrEmpty(diff)) {
         diffResults.add(diff);
-        logger.warn("Check table [{}] find diff: {}", record.getTableName(), diff);
+        logger.warn("Check target [{}.{}] find diff: {}", record.getSchemaName(), record.getTableName(), diff);
       }
     }
 
