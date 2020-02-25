@@ -40,6 +40,8 @@ public class CheckRecordApplier extends AbstractRecordApplier {
   protected YuGongContext context;
   protected DbType dbType;
 
+  private static final int DATA_SOURCE_NAME_SIZE = 2;
+
   public CheckRecordApplier(YuGongContext context) {
     this.context = context;
   }
@@ -50,8 +52,8 @@ public class CheckRecordApplier extends AbstractRecordApplier {
 
     dbType = YuGongUtils.judgeDbType(context.getTargetDs());
     tableCache = MigrateMap.makeComputingMap(names -> {
-      if (names.size() != 2) {
-        throw new YuGongException("names[" + names.toString() + "] is not valid");
+      if ((names != null ? names.size() : 0) != DATA_SOURCE_NAME_SIZE) {
+        throw new YuGongException("names[" + (names != null ? names.toString() : "null") + "] is not valid");
       }
 
       return TableMetaGenerator.getTableMeta(dbType, context.getTargetDs(),
@@ -119,7 +121,7 @@ public class CheckRecordApplier extends AbstractRecordApplier {
     final List<ColumnMeta> primaryKeys = table.getPrimaryKeys();
     final List<ColumnMeta> columns = table.getColumns();
 
-    String selectSql = null;
+    String selectSql;
     if (dbType == DbType.MYSQL) {
       selectSql = SqlTemplates.MYSQL.getSelectInSql(table.getSchema(),
           table.getName(),
@@ -133,7 +135,7 @@ public class CheckRecordApplier extends AbstractRecordApplier {
           YuGongUtils.getColumnNameArray(columns),
           batchRecords.size());
     } else {
-      throw new YuGongException("unsupport " + dbType);
+      throw new YuGongException("unsupported " + dbType);
     }
 
     Object results = jdbcTemplate.execute(selectSql, (PreparedStatementCallback) ps -> {
@@ -392,7 +394,7 @@ public class CheckRecordApplier extends AbstractRecordApplier {
               primaryKeys,
               columns);
         } else {
-          throw new YuGongException("unsupport " + dbType);
+          throw new YuGongException("unsupported " + dbType);
         }
 
         int index = 1;

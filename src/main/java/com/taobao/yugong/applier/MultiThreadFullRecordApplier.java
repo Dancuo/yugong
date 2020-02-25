@@ -85,7 +85,7 @@ public class MultiThreadFullRecordApplier extends FullRecordApplier {
         int size = records.size();
         // 全量复制时，无顺序要求，数据可以随意切割，直接按照splitSize切分后提交到多线程中进行处理
         for (; index < size; ) {
-          int end = (index + splitSize > size) ? size : (index + splitSize);
+          int end = Math.min(index + splitSize, size);
           final List<Record> subList = records.subList(index, end);
           template.submit(new Runnable() {
 

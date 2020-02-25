@@ -76,10 +76,10 @@ public class SqlServerIncrementRecordApplier extends AbstractRecordApplier {
         sql = sqlTemplate.getUpdateSql("", "", new String[]{"a"},
             Lists.newArrayList("").toArray(new String[]{}));
         break;
+      default:
+        break;
     }
-    jdbcTemplate.execute(sql, (PreparedStatementCallback) ps-> {
-      return null;
-    });
+    jdbcTemplate.execute(sql, (PreparedStatementCallback) ps-> null);
     
   }
 }

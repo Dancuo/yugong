@@ -27,7 +27,7 @@ public class ProgressTracer {
 
   private int total;
   private RunMode mode;
-  private Map<String, ProgressStatus> status = new ConcurrentHashMap<String, ProgressStatus>();
+  private Map<String, ProgressStatus> status = new ConcurrentHashMap<>();
 
   public ProgressTracer(RunMode mode, int total) {
     this.mode = mode;
@@ -50,10 +50,10 @@ public class ProgressTracer {
     int incing = 0;
     int failed = 0;
     int success = 0;
-    List<String> fullingTables = new ArrayList<String>();
-    List<String> incingTables = new ArrayList<String>();
-    List<String> failedTables = new ArrayList<String>();
-    List<String> successTables = new ArrayList<String>();
+    List<String> fullingTables = new ArrayList<>();
+    List<String> incingTables = new ArrayList<>();
+    List<String> failedTables = new ArrayList<>();
+    List<String> successTables = new ArrayList<>();
 
     for (Map.Entry<String, ProgressStatus> entry : status.entrySet()) {
       ProgressStatus progress = entry.getValue();
