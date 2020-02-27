@@ -42,7 +42,7 @@ public class VersionInfo {
     buf.append(SystemUtils.LINE_SEPARATOR);
     buf.append("[YuGong Version Info]").append(SystemUtils.LINE_SEPARATOR);
     buf.append("[version ]").append(VersionInfo.getVersion()).append(SystemUtils.LINE_SEPARATOR);
-    buf.append("[hexVeision]").append(VersionInfo.getHexVevision()).append(SystemUtils.LINE_SEPARATOR);
+    buf.append("[hexVersion]").append(VersionInfo.getHexVevision()).append(SystemUtils.LINE_SEPARATOR);
     buf.append("[date    ]").append(VersionInfo.getDate()).append(SystemUtils.LINE_SEPARATOR);
     buf.append("[branch  ]").append(VersionInfo.getBranch()).append(SystemUtils.LINE_SEPARATOR);
     buf.append("[url     ]").append(VersionInfo.getUrl()).append(SystemUtils.LINE_SEPARATOR);

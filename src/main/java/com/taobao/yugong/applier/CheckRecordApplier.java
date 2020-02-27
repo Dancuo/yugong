@@ -3,6 +3,7 @@ package com.taobao.yugong.applier;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.MigrateMap;
 import com.taobao.yugong.common.db.RecordDiffer;
 import com.taobao.yugong.common.db.meta.ColumnMeta;
@@ -13,10 +14,8 @@ import com.taobao.yugong.common.db.sql.SqlTemplates;
 import com.taobao.yugong.common.model.DbType;
 import com.taobao.yugong.common.model.YuGongContext;
 import com.taobao.yugong.common.model.record.Record;
-import com.taobao.yugong.common.stats.ProgressTracer;
 import com.taobao.yugong.common.utils.YuGongUtils;
 import com.taobao.yugong.exception.YuGongException;
-
 import org.apache.commons.lang.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,18 +75,15 @@ public class CheckRecordApplier extends AbstractRecordApplier {
       return;
     }
 
-    List<String> diffResults = doApply(records);
+    doApply(records);
 
-    if(!diffResults.isEmpty()) {
-      logger.warn("Diff results size {}", diffResults.size());
-    }
   }
 
   /**
    * 根据 record 的信息查询 Target DB 的 Record，然后进行 diff
    * 无法 Diff Target DB 里面多余的 Record
    */
-  protected List<String> doApply(List<Record> records) {
+  protected void doApply(List<Record> records) {
     Map<List<String>, List<Record>> buckets = MigrateMap.makeComputingMap(names -> Lists.newArrayList());
     List<String> diffResults = Lists.newArrayList();
 
@@ -107,7 +103,10 @@ public class CheckRecordApplier extends AbstractRecordApplier {
 
       diffResults.addAll(diff(batchRecords, queryRecords));
     }
-    return diffResults;
+
+    if(!diffResults.isEmpty()) {
+      logger.warn("Find different count: {}", diffResults.size());
+    }
   }
 
   protected List<Record> queryByBatch(JdbcTemplate jdbcTemplate, final List<Record> batchRecords) {
@@ -310,7 +309,7 @@ public class CheckRecordApplier extends AbstractRecordApplier {
   protected List<String> diff(List<Record> records1, List<Record> records2) {
     List<String> diffResults = Lists.newArrayList();
 
-    Map<List<String>, Record> recordMap2 = new HashMap<>();
+    Map<List<String>, Record> recordMap2 = Maps.newConcurrentMap();
     for (Record record : records2) {
       List<String> primaryKeys2 = Lists.newArrayList();
       for (ColumnValue pk : record.getPrimaryKeys()) {
@@ -332,7 +331,6 @@ public class CheckRecordApplier extends AbstractRecordApplier {
       String diff = RecordDiffer.diff(record, recordMap2.remove(primaryKeys1));
       if (!Strings.isNullOrEmpty(diff)) {
         diffResults.add(diff);
-        logger.warn("Check target [{}.{}] find diff: {}", record.getSchemaName(), record.getTableName(), diff);
       }
     }
 
