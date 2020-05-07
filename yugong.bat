@@ -1,1 +1,0 @@
-java "-Dfile.encoding=UTF-8" -Xms2048m -Xmx2048m -Xmn1024m -XX:SurvivorRatio=2 -Xss512k -XX:-UseAdaptiveSizePolicy -XX:MaxTenuringThreshold=15 -XX:+DisableExplicitGC -XX:+CMSParallelRemarkEnabled -XX:+UseCMSInitiatingOccupancyOnly -XX:+HeapDumpOnOutOfMemoryError -jar .\target\yugong-shaded.jar -c dev_vrms.properties -y dev_vrms.yaml

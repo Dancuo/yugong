@@ -1,32 +1,18 @@
 package com.taobao.yugong.common.db.meta;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.taobao.yugong.common.model.DbType;
 import com.taobao.yugong.common.utils.LikeUtil;
 import com.taobao.yugong.exception.YuGongException;
-
 import org.apache.commons.lang.StringUtils;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ConnectionCallback;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCallback;
 
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Types;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import javax.sql.DataSource;
+import java.sql.*;
+import java.util.*;
 
 /**
  * 基于mysql的table meta获取

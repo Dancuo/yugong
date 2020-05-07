@@ -14,7 +14,7 @@ import java.util.concurrent.atomic.AtomicLong;
 public class StatAggregation {
 
   private static final Logger logger = LoggerFactory.getLogger(StatAggregation.class);
-  private static final String HISTOGRAM_FORMAT = "{总记录数:%s,采样记录数:%s,同步TPS:%s,最长时间:%s,最小时间:%s,平均时间:%s}";
+  private static final String HISTOGRAM_FORMAT = "{Total records:%s, Sample records:%s, Sync TPS:%s, Max spend:%s, Min spend:%s, Average spend:%s}";
   private int bufferSize = 16 * 1024;
   private int indexMask;
   private AggregationItem[] table;

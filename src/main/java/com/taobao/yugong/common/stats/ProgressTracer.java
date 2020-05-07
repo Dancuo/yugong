@@ -20,10 +20,10 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ProgressTracer {
 
   private static final Logger logger = LoggerFactory.getLogger(ProgressTracer.class);
-  private static final String FULL_FORMAT = "{未启动:%s,全量中:%s,已完成:%s,异常数:%s}";
-  private static final String INC_FORMAT = "{未启动:%s,增量中:%s,已追上:%s,异常数:%s}";
-  private static final String CHECK_FORMAT = "{未启动:%s,对比中:%s,已完成:%s,异常数:%s}";
-  private static final String ALL_FORMAT = "{未启动:%s,全量中:%s,增量中:%s,已追上:%s,异常数:%s}";
+  private static final String FULL_FORMAT = "{Waiting:%s, On Full:%s, Finished:%s, Exception:%s}";
+  private static final String INC_FORMAT = "{Waiting:%s, On Inc:%s, Caught:%s, Exception:%s}";
+  private static final String CHECK_FORMAT = "{Waiting:%s, On Compare:%s, Finished:%s, Exception:%s}";
+  private static final String ALL_FORMAT = "{Waiting:%s,  On Full:%s, On Inc:%s, Caught:%s, Exception:%s}";
 
   private int total;
   private RunMode mode;
@@ -88,18 +88,18 @@ public class ProgressTracer {
     if (detail) {
       if (fulling > 0) {
         if (mode == RunMode.CHECK) {
-          logger.info("对比中:" + fullingTables);
+          logger.info("On Compare:" + fullingTables);
         } else {
-          logger.info("全量中:" + fullingTables);
+          logger.info("On Full:" + fullingTables);
         }
       }
       if (incing > 0) {
-        logger.info("增量中:" + incingTables);
+        logger.info("On Inc:" + incingTables);
       }
       if (failed > 0) {
-        logger.info("异常数:" + failedTables);
+        logger.info("Exception:" + failedTables);
       }
-      logger.info("已完成:" + successTables);
+      logger.info("Finished:" + successTables);
     }
   }
 }

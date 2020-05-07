@@ -50,7 +50,6 @@ com_crashlytics_export_strings.xml
 
 ## Project ##
 .svn/
-target/
 test-output/
 tmp
 temp
@@ -64,3 +63,9 @@ conf
 /*.yaml
 /*.properties
 positioner_data
+/.settings/
+/.classpath
+/.factorypath
+/.project
+/yugong_dev_vrcrs_product.bat
+/yugong_dev_vrms.bat
