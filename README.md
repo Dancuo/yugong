@@ -16,7 +16,7 @@
 ```
 git git@gitlab.yeshj.com:hjarch-practice/yugong.git
 cd yugong
-mvn clean package
+mvn clean package (-Dmaven.test.skip=true)
 cp target/yugong-shaded.jar .
 ```
 
