@@ -20,10 +20,10 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ProgressTracer {
 
   private static final Logger logger = LoggerFactory.getLogger(ProgressTracer.class);
-  private static final String FULL_FORMAT = "{Waiting:%s, On Full:%s, Finished:%s, Exception:%s}";
-  private static final String INC_FORMAT = "{Waiting:%s, On Inc:%s, Caught:%s, Exception:%s}";
-  private static final String CHECK_FORMAT = "{Waiting:%s, On Compare:%s, Finished:%s, Exception:%s}";
-  private static final String ALL_FORMAT = "{Waiting:%s,  On Full:%s, On Inc:%s, Caught:%s, Exception:%s}";
+  private static final String FULL_FORMAT = "{Waiting:%s, Full...:%s, Finished:%s, Exception:%s}";
+  private static final String INC_FORMAT = "{Waiting:%s, Inc...:%s, Caught:%s, Exception:%s}";
+  private static final String CHECK_FORMAT = "{Waiting:%s, Compare...:%s, Finished:%s, Exception:%s}";
+  private static final String ALL_FORMAT = "{Waiting:%s, Full...:%s, Inc...:%s, Caught:%s, Exception:%s}";
 
   private int total;
   private RunMode mode;
@@ -88,13 +88,13 @@ public class ProgressTracer {
     if (detail) {
       if (fulling > 0) {
         if (mode == RunMode.CHECK) {
-          logger.info("On Compare:" + fullingTables);
+          logger.info("Compare...:" + fullingTables);
         } else {
-          logger.info("On Full:" + fullingTables);
+          logger.info("Full...:" + fullingTables);
         }
       }
       if (incing > 0) {
-        logger.info("On Inc:" + incingTables);
+        logger.info("Inc...:" + incingTables);
       }
       if (failed > 0) {
         logger.info("Exception:" + failedTables);
