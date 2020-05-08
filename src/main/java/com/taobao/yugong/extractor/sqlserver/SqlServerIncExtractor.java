@@ -39,6 +39,8 @@ import static com.taobao.yugong.common.utils.YuGongToStringStyle.DEFAULT_DATE_TI
  */
 public class SqlServerIncExtractor extends AbstractSqlServerExtractor {
 
+    private static final String HISTORY_TABLE_NAME = "__history__";
+
     public static final int INC_MIN_DURATION = 10 * 60;
     public static final int WAITING_POLLING_SECONDS = 60;
     private final String schemaName;
@@ -120,7 +122,8 @@ public class SqlServerIncExtractor extends AbstractSqlServerExtractor {
         SimpleDateFormat format = new SimpleDateFormat(DEFAULT_DATE_TIME_PATTERN);
 
         String sql = String.format(
-                "SELECT * from __history__ where ts > '%s' and ts < '%s' and table_name = '%s'",
+                "SELECT * from %s where ts > '%s' and ts < '%s' and table_name = '%s'",
+
                 format.format(start.toDate()),
                 format.format(end.toDate()),
                 tableName
