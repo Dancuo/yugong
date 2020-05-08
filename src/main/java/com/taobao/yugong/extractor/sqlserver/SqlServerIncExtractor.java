@@ -123,7 +123,7 @@ public class SqlServerIncExtractor extends AbstractSqlServerExtractor {
 
         String sql = String.format(
                 "SELECT * from %s where ts > '%s' and ts < '%s' and table_name = '%s'",
-
+                HISTORY_TABLE_NAME,
                 format.format(start.toDate()),
                 format.format(end.toDate()),
                 tableName
